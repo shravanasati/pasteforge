@@ -1,16 +1,17 @@
 import { useState } from 'react'
 import './App.css'
-import { ThemeType, themes } from './themes'
-import {Navbar} from "./components/Navbar"
-
+import { Navbar } from "./components/Navbar"
+import { languages } from './languages'
+import { CodeEditor } from './components/CodeEditor'
 
 function App() {
-  const [theme, setTheme] = useState<ThemeType>(themes.dark)
+  const [lang, setLang] = useState(languages.plain)
 
   return (
-    <div data-theme={theme}>
-      <Navbar setTheme={setTheme} />
-    </div>
+    <>
+      <Navbar setLang={setLang} />
+      <CodeEditor/>
+    </>
   )
 }
 
