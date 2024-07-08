@@ -1,68 +1,31 @@
+import {css} from "@codemirror/lang-css"
+import {cpp} from "@codemirror/lang-cpp"
+import {go} from "@codemirror/lang-go"
+import {html} from "@codemirror/lang-html"
+import {json} from "@codemirror/lang-json"
+import {python} from "@codemirror/lang-python"
+import {rust} from "@codemirror/lang-rust"
+import {java} from "@codemirror/lang-java"
+import {javascript} from "@codemirror/lang-javascript"
+import {yaml} from "@codemirror/lang-yaml"
+import {xml} from "@codemirror/lang-xml"
+import {php} from "@codemirror/lang-php"
+import {markdown} from "@codemirror/lang-markdown"
+
 export const languages = {
-  plain: "text",
-  bash: 'bash',
-  batch: 'batch',
-  c: 'c',
-  cpp: 'cpp',
-  crystal: 'crystal',
-  csharp: 'csharp',
-  css: 'css',
-  csv: 'csv',
-  d: 'd',
-  dart: 'dart',
-  docker: 'docker',
-  elixir: 'elixir',
-  elm: 'elm',
-  erb: 'erb',
-  erlang: 'erlang',
-  fsharp: 'fsharp',
-  go: 'go',
-  groovy: 'groovy',
-  haskell: 'haskell',
-  java: 'java',
-  javascript: 'javascript',
-  json: 'json',
-  jsx: 'jsx',
-  julia: 'julia',
-  kotlin: 'kotlin',
-  latex: 'latex',
-  lisp: 'lisp',
-  lua: 'lua',
-  makefile: 'makefile',
-  markdown: 'markdown',
-  nginx: 'nginx',
-  nim: 'nim',
-  objectivec: 'objectivec',
-  ocaml: 'ocaml',
-  pascal: 'pascal',
-  perl: 'perl',
-  php: 'php',
-  powershell: 'powershell',
-  prolog: 'prolog',
-  protobuf: 'protobuf',
-  python: 'python',
-  r: 'r',
-  racket: 'racket',
-  regex: 'regex',
-  ruby: 'ruby',
-  rust: 'rust',
-  sass: 'sass',
-  scala: 'scala',
-  scheme: 'scheme',
-  scss: 'scss',
-  solidity: 'solidity',
-  sql: 'sql',
-  swift: 'swift',
-  systemd: 'systemd',
-  tcl: 'tcl',
-  toml: 'toml',
-  tsx: 'tsx',
-  typescript: 'typescript',
-  v: 'v',
-  vbnet: 'vbnet',
-  vim: 'vim',
-  wasm: 'wasm',
-  wolfram: 'wolfram',
-  yaml: 'yaml',
-  zig: 'zig'
+  "plain": null,
+  "css": css,
+  "cpp": cpp,
+  "go": go,
+  "html": html,
+  "java": java,
+  "javascript": javascript,
+  "json": json,
+  "python": python,
+  "rust": rust,
+  "markdown": markdown,
+  "php": php,
+  "xml": xml,
+  "yaml": yaml,
 };
+

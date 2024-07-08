@@ -1,22 +1,33 @@
 import React, { useState } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
-import { cpp } from '@codemirror/lang-cpp';
 import { dracula } from '@uiw/codemirror-theme-dracula';
-import { ViewUpdate } from '@codemirror/view';
+import { ViewUpdate, lineNumbers } from '@codemirror/view';
+import { languages } from '../languages';
 
-export const CodeEditor: React.FC = () => {
-	const [code, setCode] = useState<string>('// Type your C++ code here');
+type CodeEditorProps = {
+	language: string;
+}
+
+export const CodeEditor: React.FC<CodeEditorProps> = ({language}) => {
+	const [code, setCode] = useState<string>('');
 
 	const onChange = React.useCallback((value: string, _: ViewUpdate) => {
 		setCode(value);
 	}, []);
 
+	const langExt = languages[language];
+
+	const exts = [lineNumbers()];
+	if (langExt) {
+		exts.push(langExt());
+	}
+
 	return (
 		<CodeMirror
 			value={code}
-			height="200px"
+			height="80vh"
 			theme={dracula}
-			extensions={[cpp()]}
+			extensions={exts}
 			onChange={onChange}
 		/>
 	);

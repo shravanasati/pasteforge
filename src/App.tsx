@@ -1,16 +1,25 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import { Navbar } from "./components/Navbar"
-import { languages } from './languages'
+import { Footer } from "./components/Footer"
 import { CodeEditor } from './components/CodeEditor'
 
 function App() {
-  const [lang, setLang] = useState(languages.plain)
+  const [lang, setLang] = useState("plain")
+      
+  let ce = <CodeEditor language={lang} />
+  useEffect(
+    () => {
+      ce = <CodeEditor language={lang} />
+    },
+    [lang]
+  )
 
   return (
     <>
       <Navbar setLang={setLang} />
-      <CodeEditor/>
+      {ce}
+      <Footer/>
     </>
   )
 }
