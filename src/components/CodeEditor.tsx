@@ -15,7 +15,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({language}) => {
 		setCode(value);
 	}, []);
 
-	const langExt = languages[language];
+	const langExt = languages[language as keyof typeof languages];
 
 	const exts = [lineNumbers()];
 	if (langExt) {
@@ -25,7 +25,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({language}) => {
 	return (
 		<CodeMirror
 			value={code}
-			height="80vh"
+			height="75vh"
 			theme={dracula}
 			extensions={exts}
 			onChange={onChange}
