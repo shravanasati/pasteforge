@@ -65,10 +65,11 @@ export function Options() {
 
   return <>
     <h1 className="m-2 p-2">paste settings</h1>
-    <div className="flex flex-row justify-start flex-wrap items-center space-x-4">
+    <div className="flex flex-row justify-start flex-wrap items-center ml-4">
       {expirationDropdown()}
       {visibility()}
       {error == "" ? null : settingsValidationError()}
     </div>
+    <a className="btn m-4">save</a>
   </>
 }

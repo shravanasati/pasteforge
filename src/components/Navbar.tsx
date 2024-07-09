@@ -1,5 +1,5 @@
 import React from "react"
-import { Code } from "lucide-react";
+import { Code, AlignLeft } from "lucide-react";
 import logo from "../assets/logo.png"
 import { languages } from "../languages";
 
@@ -8,7 +8,7 @@ type NavbarProps = {
 }
 
 
-export const Navbar: React.FC<NavbarProps> = ({ setLang  }) => {
+export const Navbar: React.FC<NavbarProps> = ({ setLang }) => {
   const [selectedLang, setSelectedLang] = React.useState("plain")
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
 
@@ -22,9 +22,29 @@ export const Navbar: React.FC<NavbarProps> = ({ setLang  }) => {
   return (
     <div className="navbar bg-base-100">
       <div className="navbar-start">
+        <div className="dropdown">
+          <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
+            <AlignLeft size={24} color="black" />
+          </div>
+          <ul
+            tabIndex={0}
+            className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
+          >
+            <li>
+              <a>API</a>
+            </li>
+          </ul>
+        </div>
         <a className="btn btn-ghost text-xl hover:underline text-black rounded">
           <img src={logo} alt="logo" height={32} width={32} /> pasteforge
         </a>
+      </div>
+      <div className="navbar-center hidden lg:flex">
+        <ul className="menu menu-horizontal px-1">
+          <li>
+            <a>API</a>
+          </li>
+        </ul>
       </div>
       <div className="navbar-end">
         <div className="dropdown">
@@ -46,7 +66,6 @@ export const Navbar: React.FC<NavbarProps> = ({ setLang  }) => {
               ))}
             </ul>)}
         </div>
-        <a className="btn mx-1">save</a>
         <a className="btn mx-1">login</a>
       </div>
     </div>
