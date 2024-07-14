@@ -16,6 +16,20 @@ const defaultSettings: Settings = {
   visibility: "public"
 }
 
+function validateSettings(settings: any): Settings {
+  if (!settings.expiration ||(settings.expiration && typeof settings.expiration != "number")) {
+    settings.expiration = 0
+  }
+  if (!settings.duration || typeof settings.duration != "string" || !["minutes", "hours", "days", "months", "years", "never"].includes(settings.duration)) {
+    settings.duration = "never"
+  }
+  if (!settings.visibility || typeof settings.visibility != "string" || !["public", "unlisted", "private"].includes(settings.visibility)) {
+    settings.visibility = "public"
+  }
+
+  return settings
+}
+
 export function PasteSettings() {
   const [error, setError] = useState("")
 
@@ -42,12 +56,20 @@ export function PasteSettings() {
             }
             if (num < 0) {
               setError("expiration time cannot be negative")
+            } else if (num == 0 && expirationDurationRef.current!.value != "never") {
+              setError("expiration time must be greater than 0")
             } else {
               setError("")
             }
           }} />
-          <select className="select select-secondary w-full max-w-xs" ref={expirationDurationRef} >
-            <option disabled selected>duration</option>
+          <select className="select select-secondary w-full max-w-xs" ref={expirationDurationRef} onChange={(e) => {
+            if (e.target.value != "never" && expirationNumRef.current!.value == "0") {
+              setError("expiration time must be greater than 0")
+            } else {
+              setError("")
+            }
+          }} >
+            <option disabled >duration</option>
             <option>minutes</option>
             <option>hours</option>
             <option>days</option>
@@ -89,6 +111,12 @@ export function PasteSettings() {
     if (error) {
       return
     }
+    if (!expirationNumRef.current!.value && expirationDurationRef.current!.value != "never") {
+      setError("enter a number for expiration time")
+      return
+    } else {
+      setError("")
+    }
     const settings: Settings = {
       expiration: parseInt(expirationNumRef.current!.value),
       duration: expirationDurationRef.current!.value as durationEnum,
@@ -111,12 +139,12 @@ export function PasteSettings() {
     let settings: Settings;
 
     if (settingsJSON) {
-      settings = JSON.parse(settingsJSON) as Settings
+      settings = validateSettings(JSON.parse(settingsJSON))
     } else {
       settings = defaultSettings
     }
 
-    expirationNumRef.current!.value = settings.expiration.toString()
+    expirationNumRef.current!.value = settings.expiration.toString();
     expirationDurationRef.current!.value = settings.duration
     visibilityRef.current!.value = settings.visibility
   }, [])
