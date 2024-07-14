@@ -3,11 +3,11 @@ import './App.css'
 import { Navbar } from "./components/Navbar"
 import { Footer } from "./components/Footer"
 import { CodeEditor } from './components/CodeEditor'
-import { Options } from './components/Options'
+import { PasteSettings } from './components/Options'
 
 function App() {
   const [lang, setLang] = useState("plain")
-      
+
   let ce = <CodeEditor language={lang} />
   useEffect(
     () => {
@@ -20,8 +20,8 @@ function App() {
     <>
       <Navbar setLang={setLang} />
       {ce}
-      <Options />
-      <Footer/>
+      <PasteSettings />
+      <Footer />
     </>
   )
 }

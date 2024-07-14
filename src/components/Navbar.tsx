@@ -7,6 +7,22 @@ type NavbarProps = {
   setLang: (lang: string) => void;
 }
 
+function MiddleNavbarItems() {
+  return (
+    <>
+      <li>
+        <a>API</a>
+      </li>
+      <li>
+        <a>CLI</a>
+      </li>
+      <li>
+        <a>VSCode</a>
+      </li>
+    </>
+  )
+}
+
 
 export const Navbar: React.FC<NavbarProps> = ({ setLang }) => {
   const [selectedLang, setSelectedLang] = React.useState("plain")
@@ -30,9 +46,7 @@ export const Navbar: React.FC<NavbarProps> = ({ setLang }) => {
             tabIndex={0}
             className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
           >
-            <li>
-              <a>API</a>
-            </li>
+          {MiddleNavbarItems()}
           </ul>
         </div>
         <a className="btn btn-ghost text-xl hover:underline text-black rounded">
@@ -41,9 +55,7 @@ export const Navbar: React.FC<NavbarProps> = ({ setLang }) => {
       </div>
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
-          <li>
-            <a>API</a>
-          </li>
+          {MiddleNavbarItems()}
         </ul>
       </div>
       <div className="navbar-end">

@@ -2,7 +2,7 @@ import { CircleX } from "lucide-react"
 import { useState } from "react"
 
 
-export function Options() {
+export function PasteSettings() {
   const [error, setError] = useState("")
 
   function expirationDropdown() {
@@ -63,13 +63,27 @@ export function Options() {
     </div>
   }
 
-  return <>
+  const [loading, setLoading] = useState(false)
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (error) {
+      return
+    }
+    // todo save settings 
+    // todo send to server
+    setLoading(true)
+    console.log("save button clicked")
+    setTimeout(() => setLoading(false), 2000)
+  }
+
+  return <form onSubmit={handleSubmit}>
     <h1 className="m-2 p-2">paste settings</h1>
     <div className="flex flex-row justify-start flex-wrap items-center ml-4">
       {expirationDropdown()}
       {visibility()}
       {error == "" ? null : settingsValidationError()}
     </div>
-    <a className="btn m-4">save</a>
-  </>
+    {!loading ? <input type="submit" value="save" className="btn m-4" /> : <span className="btn m-4 loading loading-dots text-secondary" />}
+  </form>
 }
