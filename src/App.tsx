@@ -3,7 +3,7 @@ import './App.css'
 import { Navbar } from "./components/Navbar"
 import { Footer } from "./components/Footer"
 import { CodeEditor } from './components/CodeEditor'
-import { PasteSettings } from './components/Options'
+import { PasteSettings } from './components/PasteSettings'
 
 function App() {
   const [lang, setLang] = useState("plain")
