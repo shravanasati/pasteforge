@@ -156,6 +156,6 @@ export function PasteSettings() {
       {visibility()}
       {error == "" ? null : settingsValidationError()}
     </div>
-    {!loading ? <input type="submit" value="save" className="btn m-4" /> : <span className="btn m-4 loading loading-dots text-secondary" />}
+    {!loading ? <input type="submit" value="save" className="btn m-4" /> : <span className="btn m-4 loading loading-dots text-primary" />}
   </form>
 }
