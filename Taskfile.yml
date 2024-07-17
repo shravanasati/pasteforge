@@ -1,0 +1,26 @@
+# https://taskfile.dev
+
+version: '3'
+
+tasks:
+  assets:
+    desc: Run the vite build command.
+    sources:
+      - src/**
+      - public/**
+    cmds:
+      - pnpm build
+
+  build:
+    desc: Build the go server.
+    dir: "./backend"
+    sources:
+      - backend/**
+    cmds:
+      - go build -o server
+
+  run:
+    desc: Run the go server.
+    dir: "./backend"
+    cmds:
+      - ./server
