@@ -1,4 +1,4 @@
-import { CircleX } from "lucide-react"
+import { CircleX, KeyRoundIcon } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 
 type durationEnum = "minutes" | "hours" | "days" | "months" | "years" | "never"
@@ -97,6 +97,13 @@ export function PasteSettings() {
     </div>
   }
 
+  function password() {
+    return <div className="flex items-center">
+        <KeyRoundIcon size={24} className="mx-2 text-primary" />
+        <input type="password" placeholder="password" className="input input-bordered input-secondary w-full max-w-xs grow" /> 
+      </div>
+  }
+
   function settingsValidationError() {
     return <div role="alert" className="alert rounded alert-error w-auto">
       <CircleX size={20} />
@@ -154,6 +161,7 @@ export function PasteSettings() {
     <div className="flex flex-row justify-start flex-wrap items-center ml-4">
       {expirationDropdown()}
       {visibility()}
+      {password()}
       {error == "" ? null : settingsValidationError()}
     </div>
     {!loading ? <input type="submit" value="save" className="btn m-4" /> : <span className="btn m-4 loading loading-dots text-primary" />}
