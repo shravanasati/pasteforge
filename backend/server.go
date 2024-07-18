@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"regexp"
+	"time"
 
 	"github.com/joho/godotenv"
 
@@ -14,9 +16,10 @@ import (
 
 // env vars
 var (
-	PORT string
+	PORT     string
 	GIN_MODE string
 	DIST_DIR string
+	SECRET_KEY string
 )
 
 func validateNotEmpty(key, value string) {
@@ -28,7 +31,7 @@ func validateNotEmpty(key, value string) {
 func validatePort(val string) {
 	matches, err := regexp.MatchString(`^\d{4,5}$`, val)
 	if err != nil {
-		panic("error validating port" +  err.Error())
+		panic("error validating port" + err.Error())
 	}
 	if !matches {
 		panic(fmt.Sprintf("env var PORT=%s is incorrect", val))
@@ -50,6 +53,9 @@ func init() {
 
 	DIST_DIR = os.Getenv("DIST_DIR")
 	validateNotEmpty("DIST_DIR", DIST_DIR)
+
+	SECRET_KEY = os.Getenv("SECRET_KEY")
+	validateNotEmpty("SECRET_KEY", SECRET_KEY)
 }
 
 func main() {
@@ -59,14 +65,17 @@ func main() {
 
 	apiRouter := router.Group("/api")
 	v1Router := apiRouter.Group("/v1")
-	{
-		v1Router.GET("/ping", func(ctx *gin.Context) {
-			ctx.JSON(http.StatusOK, gin.H{
-				"message": "pong",
-			})
-		})
+	v1Router.GET("/ping", PingHandler)
+
+	router.NoRoute(gin.WrapH(http.FileServer(http.Dir(DIST_DIR))))
+
+	server := &http.Server{
+		Addr:           ":" + PORT,
+		Handler:        router,
+		ReadTimeout:    10 * time.Second,
+		WriteTimeout:   10 * time.Second,
+		MaxHeaderBytes: 1 << 20, // 1MB
 	}
-	
-	router.NoRoute(gin.WrapH(http.FileServer(http.Dir("../dist"))))
-	router.Run(":" + PORT)
+
+	log.Fatal(server.ListenAndServe())
 }
