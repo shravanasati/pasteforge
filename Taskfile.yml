@@ -20,8 +20,6 @@ tasks:
   build:
     desc: Build the go server.
     dir: "./backend"
-    sources:
-      - backend/**
     cmds:
       - go build -o server
 
