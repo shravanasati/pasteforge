@@ -39,8 +39,10 @@ func NewPasteHandler(c *gin.Context) {
 	}
 
 	// todo set default settings
+	pasteID := GenerateRandomID(8)
 
 	c.JSON(http.StatusOK, gin.H{
+		"id": pasteID,
 		"message": "ok",
 		"settings": paste.Settings,
 	})
