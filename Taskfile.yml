@@ -2,12 +2,18 @@
 
 version: '3'
 
+dotenv: ["./backend/.env"]
+
 tasks:
   assets:
     desc: Run the vite build command.
     sources:
       - src/**
       - public/**
+      - package.json
+      - pnpm-lock.yaml
+      - tsconfig*
+      # - **.config.**
     cmds:
       - pnpm build
 

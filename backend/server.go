@@ -3,11 +3,13 @@ package main
 import (
 	"net/http"
 
+	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	router := gin.Default()
+	router.Use(gzip.Gzip(gzip.DefaultCompression))
 
 	apiRouter := router.Group("/api")
 	v1Router := apiRouter.Group("/v1")

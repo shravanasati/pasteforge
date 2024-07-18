@@ -18,3 +18,4 @@ bin/
 backend
 server
 tmp/
+.env
