@@ -65,7 +65,9 @@ func main() {
 
 	apiRouter := router.Group("/api")
 	v1Router := apiRouter.Group("/v1")
+
 	v1Router.GET("/ping", PingHandler)
+	v1Router.POST("/new", NewPasteHandler)
 
 	router.NoRoute(gin.WrapH(http.FileServer(http.Dir(DIST_DIR))))
 
