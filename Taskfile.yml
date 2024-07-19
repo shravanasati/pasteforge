@@ -28,3 +28,17 @@ tasks:
     dir: "./backend"
     cmds:
       - ./server
+
+  loc:
+    desc: Count the lines of code.
+    cmds:
+      - tokei -e "*.json" -e "*.yaml" -e "*.yml" -e "*.md" -e "*.txt"
+
+  env:
+    desc: Prints out the env variables required by the backend server to run.
+    silent: true
+    cmds:
+      - echo GIN_MODE=debug
+      - echo PORT=3122
+      - echo DIST_DIR="../dist"
+      - echo SECRET_KEY="$(python -c 'import secrets;print(secrets.token_urlsafe())')"
