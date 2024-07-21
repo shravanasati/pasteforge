@@ -22,7 +22,9 @@ Returns
 
 Here's what the full request path would look like: `http://localhost:3122/api/v1/ping`.
 
-#### POST `/new`
+#### `/api/v1/paste`
+
+##### POST `/new`
 
 Upload a paste. Requires the following JSON payload.
 

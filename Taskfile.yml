@@ -42,3 +42,23 @@ tasks:
       - echo PORT=3122
       - echo DIST_DIR="../dist"
       - echo SECRET_KEY="$(python -c 'import secrets;print(secrets.token_urlsafe())')"
+      - echo POSTGRES_USER="postgres"
+      - echo POSTGRES_PASSWORD="verysecretpassword"
+      - echo POSTGRES_DB="pasteforge"
+
+  up:
+    dir: "./backend"
+    desc: Run docker compose up.
+    cmds:
+      - docker compose up
+
+  down:
+    dir: "./backend"
+    desc: Run docker compose down.
+    cmds:
+      - docker compose down 
+
+  psql:
+    desc: Connect to the postgres container using psql.
+    cmds:
+      - psql -h localhost -p 5432 -U postgres -d pasteforge
