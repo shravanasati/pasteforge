@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -8,13 +9,13 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/joho/godotenv"
-
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/joho/godotenv"
 
-	"github.com/shravanasati/pasteforge/backend/routes/misc"
-	"github.com/shravanasati/pasteforge/backend/routes/pastes"
+	"github.com/shravanasati/pasteforge/backend/services/misc"
+	"github.com/shravanasati/pasteforge/backend/services/pastes"
 )
 
 // env vars
@@ -23,6 +24,9 @@ var (
 	GIN_MODE   string
 	DIST_DIR   string
 	SECRET_KEY string
+	POSTGRES_USER string
+	POSTGRES_PASSWORD string
+	POSTGRES_DB string
 )
 
 func validateNotEmpty(key, value string) {
@@ -59,9 +63,32 @@ func init() {
 
 	SECRET_KEY = os.Getenv("SECRET_KEY")
 	validateNotEmpty("SECRET_KEY", SECRET_KEY)
+
+	POSTGRES_USER = os.Getenv("POSTGRES_USER")
+	validateNotEmpty("POSTGRES_USER", POSTGRES_USER)
+	POSTGRES_PASSWORD = os.Getenv("POSTGRES_PASSWORD")
+	validateNotEmpty("POSTGRES_PASSWORD", POSTGRES_PASSWORD)
+	POSTGRES_DB = os.Getenv("POSTGRES_DB")
+	validateNotEmpty("POSTGRES_DB", POSTGRES_DB)
+}
+
+func getPostgresConnURI() string {
+	return fmt.Sprintf("postgres://%v:%v@localhost:5432/%v", POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB)
+}
+
+func initDB() *pgxpool.Pool {
+	ctx := context.Background()
+	conn, err := pgxpool.New(ctx, getPostgresConnURI())
+	if err != nil {
+		panic("unable to connect to the database: " + err.Error())
+	}
+	return conn
 }
 
 func main() {
+	db := initDB()
+	defer db.Close()
+
 	gin.SetMode(GIN_MODE)
 	router := gin.Default()
 	router.Use(gzip.Gzip(gzip.DefaultCompression))
@@ -70,7 +97,8 @@ func main() {
 	v1Router := apiRouter.Group("/v1")
 
 	misc.RegisterRoutes(v1Router)
-	pastes.RegisterRoutes(v1Router)
+	pastesHandler := pastes.NewHandler(db)
+	pastesHandler.RegisterRoutes(v1Router)
 
 	router.NoRoute(gin.WrapH(http.FileServer(http.Dir(DIST_DIR))))
 
