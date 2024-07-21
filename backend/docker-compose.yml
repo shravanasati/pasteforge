@@ -18,6 +18,15 @@ services:
        tmpfs:
          size: 134217728 # 128*2^20 bytes = 128Mb
 
+  pasteforge:
+  # todo env file
+    image: pasteforge
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+
   # redis:
   #   image: redis:latest
   #   ports:

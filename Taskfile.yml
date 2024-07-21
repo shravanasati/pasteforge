@@ -62,3 +62,13 @@ tasks:
     desc: Connect to the postgres container using psql.
     cmds:
       - psql -h localhost -p 5432 -U postgres -d pasteforge
+
+  dockerfile:
+    desc: Build the docker image from backend/Dockerfile.
+    cmds:
+      - docker build -t pasteforge -f ./backend/Dockerfile .
+
+  docker-run:
+    desc: Run the pasteforge docker image.
+    cmds:
+      - docker run -p 8080:8080 pasteforge
