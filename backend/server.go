@@ -12,13 +12,16 @@ import (
 
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
+
+	"github.com/shravanasati/pasteforge/backend/routes/misc"
+	"github.com/shravanasati/pasteforge/backend/routes/pastes"
 )
 
 // env vars
 var (
-	PORT     string
-	GIN_MODE string
-	DIST_DIR string
+	PORT       string
+	GIN_MODE   string
+	DIST_DIR   string
 	SECRET_KEY string
 )
 
@@ -66,8 +69,8 @@ func main() {
 	apiRouter := router.Group("/api")
 	v1Router := apiRouter.Group("/v1")
 
-	v1Router.GET("/ping", PingHandler)
-	v1Router.POST("/new", NewPasteHandler)
+	misc.RegisterRoutes(v1Router)
+	pastes.RegisterRoutes(v1Router)
 
 	router.NoRoute(gin.WrapH(http.FileServer(http.Dir(DIST_DIR))))
 

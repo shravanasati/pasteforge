@@ -103,7 +103,7 @@ function Visibility({visibilityRef}: VisibilityProps) {
 function PasswordField() {
   return <div className="flex items-center">
     <KeyRoundIcon size={24} className="mx-2 text-primary" />
-    <input type="password" placeholder="password" className="input input-bordered input-secondary w-full max-w-xs grow" />
+    <input type="password" placeholder="password" className="input input-bordered input-secondary w-full max-w-xs grow text-black" />
   </div>
 }
 

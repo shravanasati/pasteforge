@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"math/rand"
@@ -16,9 +16,9 @@ func GenerateRandomID(length int) string {
 	var s strings.Builder
 	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
 	total := len(charset)
-	
+
 	for i := 0; i < length; i++ {
-		s.WriteByte( charset[rng.Intn(total)])
+		s.WriteByte(charset[rng.Intn(total)])
 	}
 
 	return s.String()
