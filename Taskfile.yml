@@ -58,6 +58,12 @@ tasks:
     cmds:
       - docker compose down 
 
+  postgres:
+    dir: "./backend"
+    desc: Run postgres container using docker compose.
+    cmds:
+      - docker compose up -d postgres
+
   psql:
     desc: Connect to the postgres container using psql.
     cmds:
@@ -66,7 +72,7 @@ tasks:
   dockerfile:
     desc: Build the docker image from backend/Dockerfile.
     cmds:
-      - docker build -t pasteforge -f ./backend/Dockerfile .
+      - docker build -t shravanasati/pasteforge -f ./backend/Dockerfile .
 
   docker-run:
     desc: Run the pasteforge docker image.

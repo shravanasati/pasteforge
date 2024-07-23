@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { dracula } from '@uiw/codemirror-theme-dracula';
 import { ViewUpdate, lineNumbers } from '@codemirror/view';
@@ -10,24 +10,26 @@ type CodeEditorProps = {
 
 export const CodeEditor: React.FC<CodeEditorProps> = ({language}) => {
 	const [code, setCode] = useState<string>('');
+    const [extensions, setExtensions] = useState<any[]>([lineNumbers()]);
 
 	const onChange = React.useCallback((value: string, _: ViewUpdate) => {
 		setCode(value);
 	}, []);
 
-	const langExt = languages[language as keyof typeof languages];
-
-	const exts = [lineNumbers()];
-	if (langExt) {
-		exts.push(langExt());
-	}
+	useEffect(() => {
+		const loadLanguage = async () => {
+			const lang = await languages[language as keyof typeof languages]();
+			setExtensions([lineNumbers(), lang.languageSupport()]);
+		}
+		loadLanguage();
+	}, [language]);
 
 	return (
 		<CodeMirror
 			value={code}
 			height="75vh"
 			theme={dracula}
-			extensions={exts}
+			extensions={extensions}
 			onChange={onChange}
 		/>
 	);
