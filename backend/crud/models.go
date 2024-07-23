@@ -16,7 +16,6 @@ type Paste struct {
 	Visibility string
 	Language   string
 	Password   pgtype.Text
-	AuthorName pgtype.Text
 }
 
 type User struct {

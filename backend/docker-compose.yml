@@ -18,7 +18,6 @@ services:
           size: 134217728 # 128*2^20 bytes = 128Mb
 
   pasteforge:
-  # todo env file
     image: pasteforge:latest
     # build:
     #   context: .

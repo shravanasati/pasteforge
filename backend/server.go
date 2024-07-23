@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -14,19 +13,20 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 
+	"github.com/shravanasati/pasteforge/backend/db"
 	"github.com/shravanasati/pasteforge/backend/services/misc"
 	"github.com/shravanasati/pasteforge/backend/services/pastes"
 )
 
 // env vars
 var (
-	PORT       string
-	GIN_MODE   string
-	DIST_DIR   string
-	SECRET_KEY string
-	POSTGRES_USER string
+	PORT              string
+	GIN_MODE          string
+	DIST_DIR          string
+	SECRET_KEY        string
+	POSTGRES_USER     string
 	POSTGRES_PASSWORD string
-	POSTGRES_DB string
+	POSTGRES_DB       string
 )
 
 func validateNotEmpty(key, value string) {
@@ -72,15 +72,10 @@ func init() {
 	validateNotEmpty("POSTGRES_DB", POSTGRES_DB)
 }
 
-func getPostgresConnURI() string {
-	return fmt.Sprintf("postgres://%v:%v@localhost:5432/%v", POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB)
-}
-
 func initDB() *pgxpool.Pool {
-	ctx := context.Background()
-	conn, err := pgxpool.New(ctx, getPostgresConnURI())
+	conn, err := db.NewConnPool(POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB)
 	if err != nil {
-		panic("unable to connect to the database: " + err.Error())
+		panic(err)
 	}
 	return conn
 }

@@ -13,10 +13,10 @@ import (
 
 const createPaste = `-- name: CreatePaste :exec
 INSERT INTO
-   pastes ( id, content, expires_at, visibility, language, password, author_name ) 
+   pastes ( id, content, expires_at, visibility, language, password ) 
 VALUES
    (
-      $1, $2, $3, $4, $5, $6, $7 
+      $1, $2, $3, $4, $5, $6
    )
 `
 
@@ -27,7 +27,6 @@ type CreatePasteParams struct {
 	Visibility string
 	Language   string
 	Password   pgtype.Text
-	AuthorName pgtype.Text
 }
 
 func (q *Queries) CreatePaste(ctx context.Context, arg CreatePasteParams) error {
@@ -38,7 +37,6 @@ func (q *Queries) CreatePaste(ctx context.Context, arg CreatePasteParams) error 
 		arg.Visibility,
 		arg.Language,
 		arg.Password,
-		arg.AuthorName,
 	)
 	return err
 }

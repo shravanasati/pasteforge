@@ -78,3 +78,27 @@ tasks:
     desc: Run the pasteforge docker image.
     cmds:
       - docker run -p 8080:8080 pasteforge
+
+  sqlc:
+    desc: Run sqlc generation.
+    dir: "./backend"
+    cmds:
+      - sqlc generate
+
+  migrate-up:
+    desc: Migrate UP database using tern.
+    dir: "./backend"
+    cmds:
+      - tern migrate -m ./migrations -c  ./migrations/tern.conf
+
+  migrate-down:
+    desc: Migrate DOWN database using tern.
+    dir: "./backend"
+    cmds:
+      - tern migrate -d -1 -m ./migrations -c  ./migrations/tern.conf
+
+  migrate-new:
+    desc: Create a new migration. Must prepend `--` before migration name.
+    dir: './backend'
+    cmds:
+      - tern new -m migrations {{ .CLI_ARGS }}

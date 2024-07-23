@@ -8,7 +8,6 @@ CREATE TABLE pastes (
 	password VARCHAR(255)
 );
 
-CREATE TABLE users (
-	username VARCHAR(255) PRIMARY KEY,
-	sessions JSONB
-);
+---- create above / drop below ----
+
+DROP TABLE pastes;
