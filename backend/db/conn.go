@@ -8,13 +8,13 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func getPostgresConnURI(user, password, dbname string) string {
-	return fmt.Sprintf("postgres://%v:%v@localhost:5432/%v", user, password, dbname)
+func getPostgresConnURI(user, password, hostname, port, dbname string) string {
+	return fmt.Sprintf("postgres://%v:%v@%v:%v/%v", user, password, hostname, port, dbname)
 }
 
-func NewConn(user, password, dbname string) (*pgx.Conn, error) {
+func NewConn(user, password, hostname, port, dbname string) (*pgx.Conn, error) {
 	ctx := context.Background()
-	conn, err := pgx.Connect(ctx, getPostgresConnURI(user, password, dbname))
+	conn, err := pgx.Connect(ctx, getPostgresConnURI(user, password, hostname, port, dbname))
 	if err != nil {
 		return nil, err
 	}
@@ -25,9 +25,9 @@ func NewConn(user, password, dbname string) (*pgx.Conn, error) {
 	return conn, nil
 }
 
-func NewConnPool(user, password, dbname string) (*pgxpool.Pool, error) {
+func NewConnPool(user, password, hostname, port, dbname string) (*pgxpool.Pool, error) {
 	ctx := context.Background()
-	conn, err := pgxpool.New(ctx, getPostgresConnURI(user, password, dbname))
+	conn, err := pgxpool.New(ctx, getPostgresConnURI(user, password, hostname, port, dbname))
 	if err != nil {
 		return nil, fmt.Errorf("unable to connect to the database: %v", err)
 	}

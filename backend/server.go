@@ -26,6 +26,8 @@ var (
 	SECRET_KEY        string
 	POSTGRES_USER     string
 	POSTGRES_PASSWORD string
+	POSTGRES_HOSTNAME string
+	POSTGRES_PORT     string
 	POSTGRES_DB       string
 )
 
@@ -35,13 +37,13 @@ func validateNotEmpty(key, value string) {
 	}
 }
 
-func validatePort(val string) {
+func validatePort(key, val string) {
 	matches, err := regexp.MatchString(`^\d{4,5}$`, val)
 	if err != nil {
 		panic("error validating port" + err.Error())
 	}
 	if !matches {
-		panic(fmt.Sprintf("env var PORT=%s is incorrect", val))
+		panic(fmt.Sprintf("env var %s=%s is incorrect", key, val))
 	}
 }
 
@@ -53,7 +55,7 @@ func init() {
 
 	PORT = os.Getenv("PORT")
 	validateNotEmpty("PORT", PORT)
-	validatePort(PORT)
+	validatePort("PORT", PORT)
 
 	GIN_MODE = os.Getenv("GIN_MODE")
 	validateNotEmpty("GIN_MODE", GIN_MODE)
@@ -70,10 +72,15 @@ func init() {
 	validateNotEmpty("POSTGRES_PASSWORD", POSTGRES_PASSWORD)
 	POSTGRES_DB = os.Getenv("POSTGRES_DB")
 	validateNotEmpty("POSTGRES_DB", POSTGRES_DB)
+	POSTGRES_HOSTNAME = os.Getenv("POSTGRES_HOSTNAME")
+	validateNotEmpty("POSTGRES_HOSTNAME", POSTGRES_HOSTNAME)
+	POSTGRES_PORT = os.Getenv("POSTGRES_PORT")
+	validateNotEmpty("POSTGRES_PORT", POSTGRES_PORT)
+	validatePort("POSTGRES_PORT", POSTGRES_PORT)
 }
 
 func initDB() *pgxpool.Pool {
-	conn, err := db.NewConnPool(POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB)
+	conn, err := db.NewConnPool(POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_HOSTNAME, POSTGRES_PORT, POSTGRES_DB)
 	if err != nil {
 		panic(err)
 	}

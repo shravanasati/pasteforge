@@ -45,6 +45,8 @@ tasks:
       - echo POSTGRES_USER="postgres"
       - echo POSTGRES_PASSWORD="verysecretpassword"
       - echo POSTGRES_DB="pasteforge"
+      - echo POSTGRES_HOSTNAME="localhost"
+      - echo POSTGRES_PORT=5432
 
   up:
     dir: "./backend"
