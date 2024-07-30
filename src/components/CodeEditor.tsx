@@ -6,10 +6,11 @@ import { languages } from '../languages';
 
 type CodeEditorProps = {
 	language: string;
+	code: string,
+	setCode: React.Dispatch<React.SetStateAction<string>>
 }
 
-export const CodeEditor: React.FC<CodeEditorProps> = ({language}) => {
-	const [code, setCode] = useState<string>('');
+export const CodeEditor: React.FC<CodeEditorProps> = ({language, code, setCode}) => {
     const [extensions, setExtensions] = useState<any[]>([lineNumbers()]);
 
 	const onChange = React.useCallback((value: string, _: ViewUpdate) => {

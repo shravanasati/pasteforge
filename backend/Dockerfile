@@ -25,7 +25,7 @@ RUN go build -o server
 
 
 # Final stage: Copy the frontend and Go server into a new image
-FROM alpine
+FROM alpine:3.20
 WORKDIR /app
 COPY --from=frontend-build /app/dist ./dist
 COPY --from=server-build /app/server ./server

@@ -17,7 +17,7 @@ const defaultSettings: Settings = {
 }
 
 function validateSettings(settings: any): Settings {
-  if (!settings.expiration ||(settings.expiration && typeof settings.expiration != "number")) {
+  if (!settings.expiration || (settings.expiration && typeof settings.expiration != "number")) {
     settings.expiration = 0
   }
   if (!settings.duration || typeof settings.duration != "string" || !["minutes", "hours", "days", "months", "years", "never"].includes(settings.duration)) {
@@ -36,7 +36,7 @@ type ExpirationDropdownProps = {
   setError: React.Dispatch<React.SetStateAction<string>>
 }
 
-function ExpirationDropdown({expirationNumRef, expirationDurationRef, setError}: ExpirationDropdownProps) {
+function ExpirationDropdown({ expirationNumRef, expirationDurationRef, setError }: ExpirationDropdownProps) {
   return (
     <div className="flex items-center">
       <div tabIndex={0} role="button" className="text-primary m-2">expiration: </div>
@@ -85,7 +85,7 @@ type VisibilityProps = {
   visibilityRef: React.RefObject<HTMLSelectElement>
 }
 
-function Visibility({visibilityRef}: VisibilityProps) {
+function Visibility({ visibilityRef }: VisibilityProps) {
   return <div className="flex items-center">
     <div tabIndex={0} role="button" className="text-primary m-2">visibility: </div>
     <div
@@ -107,14 +107,14 @@ function PasswordField() {
   </div>
 }
 
-function SettingsValidationError({error}: {error: string}) {
-  return <div role="alert" className="alert rounded alert-error w-auto">
+function SettingsValidationError({ error }: { error: string }) {
+  return <div role="alert" className="alert rounded alert-error w-auto m-2">
     <CircleX size={20} />
     <span>{error}</span>
   </div>
 }
 
-function handleSubmit(e: React.FormEvent, error: string, setError: React.Dispatch<React.SetStateAction<string>>, expirationNumRef: React.RefObject<HTMLInputElement>, expirationDurationRef: React.RefObject<HTMLSelectElement>, visibilityRef: React.RefObject<HTMLSelectElement>, setLoading: React.Dispatch<React.SetStateAction<boolean>>) {
+async function handleSubmit(e: React.FormEvent, error: string, setError: React.Dispatch<React.SetStateAction<string>>, expirationNumRef: React.RefObject<HTMLInputElement>, expirationDurationRef: React.RefObject<HTMLSelectElement>, visibilityRef: React.RefObject<HTMLSelectElement>, setLoading: React.Dispatch<React.SetStateAction<boolean>>, code: string, language: string) {
   e.preventDefault()
   if (error) {
     return
@@ -125,6 +125,18 @@ function handleSubmit(e: React.FormEvent, error: string, setError: React.Dispatc
   } else {
     setError("")
   }
+
+  // if (!code) {
+  //   setError("enter some paste content")
+  //   return
+  // }
+
+  const expirationNumber = parseInt(expirationNumRef.current!.value, 10)
+  if (!expirationNumber) {
+    setError("expiration number is not a number")
+    return
+  }
+
   const settings: Settings = {
     expiration: parseInt(expirationNumRef.current!.value),
     duration: expirationDurationRef.current!.value as durationEnum,
@@ -136,14 +148,44 @@ function handleSubmit(e: React.FormEvent, error: string, setError: React.Dispatc
     console.error("local storage quota exceeded")
   }
 
-  // todo send to server
   setLoading(true)
   console.log("save button clicked")
-  setTimeout(() => setLoading(false), 2000)
+  try {
+    const reqBody = {
+      "content": code,
+      "settings": {
+        "expiration_number": expirationNumber,
+        "expiration_duration": expirationDurationRef.current!.value,
+        "visibility": visibilityRef.current!.value,
+        "language": language,
+        "password": ""
+      }
+    } 
+    console.log(reqBody)
+
+    const resp = await fetch("/api/v1/paste/new", {
+      method: "POST",
+      body: JSON.stringify(reqBody)
+    })
+    if (resp.status != 200) {
+      console.error("request failed", resp.json())
+      setLoading(false)
+      return
+    }
+    console.log("saved")
+  } catch (e) {
+    console.error("request failed", e)
+    setLoading(false)
+  }
+  setLoading(false)
 }
 
+type PasteSettingsProps = {
+  language: string
+  code: string
+}
 
-export function PasteSettings() {
+export function PasteSettings({ language, code }: PasteSettingsProps) {
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
 
@@ -166,13 +208,13 @@ export function PasteSettings() {
     visibilityRef.current!.value = settings.visibility
   }, [])
 
-  return <form onSubmit={(e) => handleSubmit(e, error, setError, expirationNumRef, expirationDurationRef, visibilityRef, setLoading)}>
+  return <form onSubmit={(e) => handleSubmit(e, error, setError, expirationNumRef, expirationDurationRef, visibilityRef, setLoading, code, language)}>
     <h1 className="m-2 p-2">paste settings</h1>
     <div className="flex flex-row justify-start flex-wrap items-center ml-4">
       <ExpirationDropdown expirationNumRef={expirationNumRef} expirationDurationRef={expirationDurationRef} setError={setError} />
       <Visibility visibilityRef={visibilityRef} />
       <PasswordField />
-      {error == "" ? null : <SettingsValidationError error={error}/>}
+      {error === "" ? null : <SettingsValidationError error={error} />}
     </div>
     {!loading ? <input type="submit" value="save" className="btn m-4" /> : <span className="btn m-4 loading loading-dots text-primary" />}
   </form>

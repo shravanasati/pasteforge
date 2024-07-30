@@ -7,11 +7,12 @@ import { PasteSettings } from './components/PasteSettings'
 
 function App() {
   const [lang, setLang] = useState("plain")
+  const [code, setCode] = useState("")
 
-  let ce = <CodeEditor language={lang} />
+  let ce = <CodeEditor language={lang} code={code} setCode={setCode}/>
   useEffect(
     () => {
-      ce = <CodeEditor language={lang} />
+      ce = <CodeEditor language={lang} code={code} setCode={setCode}/>
     },
     [lang]
   )
@@ -20,7 +21,7 @@ function App() {
     <>
       <Navbar setLang={setLang} />
       {ce}
-      <PasteSettings />
+      <PasteSettings language={lang} code={code} />
       <Footer />
     </>
   )

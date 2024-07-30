@@ -18,11 +18,15 @@ services:
           size: 134217728 # 128*2^20 bytes = 128Mb
 
   pasteforge:
-    image: pasteforge:latest
+    image: shravanasati/pasteforge:latest
     # build:
     #   context: .
     #   dockerfile: Dockerfile
     env_file: .env
+    environment:
+      - GIN_MODE=release
+      - DIST_DIR="./dist"
+      - PORT=8080
     ports:
       - "8080:8080"
 

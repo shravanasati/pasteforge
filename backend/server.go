@@ -105,5 +105,6 @@ func main() {
 		MaxHeaderBytes: 1 << 20, // 1MB
 	}
 
+	log.Println("Listening at port", PORT)
 	log.Fatal(server.ListenAndServe())
 }

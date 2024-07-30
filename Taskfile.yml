@@ -77,7 +77,7 @@ tasks:
   docker-run:
     desc: Run the pasteforge docker image.
     cmds:
-      - docker run -p 8080:8080 pasteforge
+      - docker run -p 8080:8080 shravanasati/pasteforge
 
   sqlc:
     desc: Run sqlc generation.

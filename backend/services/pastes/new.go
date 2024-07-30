@@ -67,10 +67,10 @@ func createPasteServerError(c *gin.Context) {
 
 func (h *Handler) NewPasteHandler(c *gin.Context) {
 	var paste NewPasteRequest
-	err := c.BindJSON(&paste)
+	err := c.ShouldBindJSON(&paste)
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{
-			"error": "the json payload doesn't match",
+			"error": err,
 		})
 		return
 	}
@@ -86,6 +86,7 @@ func (h *Handler) NewPasteHandler(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid value of expiration_duration="+paste.Settings.ExpirationDuration})
 			return
 		}
+		// todo expires at not working
 		pasteExpiration = pgtype.Timestamp{Time: time.Now().Add(duration * time.Duration(paste.Settings.ExpirationNumber))}
 	}
 
