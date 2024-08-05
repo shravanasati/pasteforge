@@ -29,8 +29,9 @@ services:
           condition: service_healthy
     env_file: .env
     environment:
+      - ADDR=0.0.0.0
       - GIN_MODE=release
-      - DIST_DIR="./dist"
+      - DIST_DIR=/app/dist
       - PORT=8080
       - POSTGRES_HOSTNAME=postgres
     ports:

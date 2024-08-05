@@ -28,11 +28,13 @@ RUN go build -o server
 FROM alpine:3.20
 WORKDIR /app
 COPY --from=frontend-build /app/dist ./dist
-COPY --from=server-build /app/server ./server
+COPY --from=server-build /app/server .
 COPY --from=server-build /app/.env ./.env
+ENV ADDR="0.0.0.0"
 ENV PORT=8080
 ENV GIN_MODE=release
-ENV DIST_DIR="./dist"
+ENV DIST_DIR="/app/dist"
 # Expose the port your Go server listens on
 EXPOSE 8080
+USER root
 CMD ["./server"]

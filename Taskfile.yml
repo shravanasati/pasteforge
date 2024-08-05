@@ -38,6 +38,7 @@ tasks:
     desc: Prints out the env variables required by the backend server to run.
     silent: true
     cmds:
+      - echo ADDR="127.0.0.1"
       - echo GIN_MODE=debug
       - echo PORT=3122
       - echo DIST_DIR="../dist"

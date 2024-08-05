@@ -20,6 +20,7 @@ import (
 
 // env vars
 var (
+	ADDR string
 	PORT              string
 	GIN_MODE          string
 	DIST_DIR          string
@@ -52,6 +53,9 @@ func init() {
 	if err != nil {
 		panic("unable to load env variables")
 	}
+
+	ADDR = os.Getenv("ADDR")
+	validateNotEmpty("ADDR", ADDR)
 
 	PORT = os.Getenv("PORT")
 	validateNotEmpty("PORT", PORT)
@@ -105,7 +109,7 @@ func main() {
 	router.NoRoute(gin.WrapH(http.FileServer(http.Dir(DIST_DIR))))
 
 	server := &http.Server{
-		Addr:           ":" + PORT,
+		Addr:           ADDR + ":" + PORT,
 		Handler:        router,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
