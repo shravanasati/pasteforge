@@ -70,7 +70,8 @@ tasks:
   psql:
     desc: Connect to the postgres container using psql.
     cmds:
-      - psql -h localhost -p 5432 -U postgres -d pasteforge
+      # - psql -h localhost -p 5432 -U postgres -d pasteforge
+      - psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOSTNAME:$POSTGRES_PORT/$POSTGRES_DB"
 
   dockerfile:
     desc: Build the docker image from backend/Dockerfile.

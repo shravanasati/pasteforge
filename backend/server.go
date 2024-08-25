@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"regexp"
@@ -95,6 +96,8 @@ func main() {
 	db := initDB()
 	defer db.Close()
 
+	logger := slog.Default()
+
 	gin.SetMode(GIN_MODE)
 	router := gin.Default()
 	router.Use(gzip.Gzip(gzip.DefaultCompression))
@@ -103,7 +106,7 @@ func main() {
 	v1Router := apiRouter.Group("/v1")
 
 	misc.RegisterRoutes(v1Router)
-	pastesHandler := pastes.NewHandler(db)
+	pastesHandler := pastes.NewHandler(logger, db)
 	pastesHandler.RegisterRoutes(v1Router)
 
 	router.NoRoute(gin.WrapH(http.FileServer(http.Dir(DIST_DIR))))
@@ -116,6 +119,6 @@ func main() {
 		MaxHeaderBytes: 1 << 20, // 1MB
 	}
 
-	log.Println("Listening at port", PORT)
+	logger.Info("Listening at", "port", PORT)
 	log.Fatal(server.ListenAndServe())
 }

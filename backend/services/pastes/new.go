@@ -2,7 +2,6 @@ package pastes
 
 import (
 	"context"
-	"log/slog"
 	"net/http"
 	"time"
 
@@ -107,7 +106,7 @@ func (h *Handler) NewPasteHandler(c *gin.Context) {
 		ExpiresAt: pasteExpiration,
 	})
 	if err != nil {
-		slog.Error("unable to create paste:", err.Error())
+		h.logger.Error("unable to create paste:", "err", err.Error())
 		createPasteServerError(c)
 		return
 	}
