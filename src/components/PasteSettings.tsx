@@ -163,7 +163,7 @@ async function handleSubmit(e: React.FormEvent, error: string, setError: React.D
     } 
     console.log(reqBody)
 
-    const resp = await fetch("/api/v1/paste/new", {
+    const resp = await fetch("/api/v1/pastes/new", {
       method: "POST",
       body: JSON.stringify(reqBody)
     })

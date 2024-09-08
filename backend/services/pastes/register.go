@@ -19,7 +19,7 @@ func NewHandler(logger *slog.Logger, db *pgxpool.Pool) *Handler {
 }
 
 func (h *Handler) RegisterRoutes(r *gin.RouterGroup) {
-	pasteRouter := r.Group("/paste")
-	pasteRouter.GET("/:id", h.GetPasteHandler)
+	pasteRouter := r.Group("/pastes")
+	pasteRouter.GET("/get/:id", h.GetPasteHandler)
 	pasteRouter.POST("/new", h.NewPasteHandler)
 }

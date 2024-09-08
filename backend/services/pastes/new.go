@@ -2,6 +2,7 @@ package pastes
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -11,6 +12,7 @@ import (
 	"github.com/shravanasati/pasteforge/backend/utils"
 )
 
+// todo add validation for this shit
 type PasteSettings struct {
 	Language           string `json:"language"`
 	ExpirationDuration string `json:"expiration_duration"`
@@ -19,12 +21,12 @@ type PasteSettings struct {
 	Password           string `json:"password"`
 }
 
-var stringToDurationMap = map[string]time.Duration {
+var stringToDurationMap = map[string]time.Duration{
 	"minutes": time.Minute,
-	"hours": time.Hour,
-	"days": time.Hour * 24,
-	"months": time.Hour * 24 * 30,
-	"year": time.Hour * 24 * 365,
+	"hours":   time.Hour,
+	"days":    time.Hour * 24,
+	"months":  time.Hour * 24 * 30,
+	"year":    time.Hour * 24 * 365,
 }
 
 func DefaultPasteSettings() PasteSettings {
@@ -82,12 +84,13 @@ func (h *Handler) NewPasteHandler(c *gin.Context) {
 	} else {
 		duration, ok := stringToDurationMap[paste.Settings.ExpirationDuration]
 		if !ok {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid value of expiration_duration="+paste.Settings.ExpirationDuration})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid value of expiration_duration=" + paste.Settings.ExpirationDuration})
 			return
 		}
 		// todo expires at not working
 		pasteExpiration = pgtype.Timestamp{Time: time.Now().Add(duration * time.Duration(paste.Settings.ExpirationNumber))}
 	}
+	h.logger.Debug("new paste handler", "paste", paste)
 
 	ctx := context.Background()
 	tx, err := h.db.Begin(ctx)
@@ -97,13 +100,14 @@ func (h *Handler) NewPasteHandler(c *gin.Context) {
 	}
 	defer tx.Rollback(ctx)
 	qtx := h.pasteStore.WithTx(tx)
+	fmt.Println(paste)
 	err = qtx.CreatePaste(ctx, crud.CreatePasteParams{
-		ID: pasteID,
-		Content: paste.Content,
-		Language: paste.Settings.Language,
-		Password: pgtype.Text{String: paste.Settings.Password},
+		ID:         pasteID,
+		Content:    paste.Content,
+		Language:   paste.Settings.Language,
+		Password:   pgtype.Text{String: paste.Settings.Password},
 		Visibility: paste.Settings.Visibility,
-		ExpiresAt: pasteExpiration,
+		ExpiresAt:  pasteExpiration,
 	})
 	if err != nil {
 		h.logger.Error("unable to create paste:", "err", err.Error())
