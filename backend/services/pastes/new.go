@@ -1,24 +1,27 @@
 package pastes
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"time"
 
+	z "github.com/Oudwins/zog"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/shravanasati/pasteforge/backend/crud"
 	"github.com/shravanasati/pasteforge/backend/utils"
 )
 
-// todo add validation for this shit
 type PasteSettings struct {
-	Language           string `json:"language"`
-	ExpirationDuration string `json:"expiration_duration"`
-	ExpirationNumber   uint   `json:"expiration_number"`
-	Visibility         string `json:"visibility"`
-	Password           string `json:"password"`
+	Language           string `json:"language" zog:"language"`
+	ExpirationDuration string `json:"expiration_duration" zog:"expiration_duration"`
+	ExpirationNumber   uint   `json:"expiration_number" zog:"expiration_number"`
+	Visibility         string `json:"visibility" zog:"visibility"`
+	Password           string `json:"password" zog:"password"`
 }
 
 var stringToDurationMap = map[string]time.Duration{
@@ -44,21 +47,13 @@ type NewPasteRequest struct {
 	Settings PasteSettings `json:"settings"`
 }
 
-// fixSettings take a PasteRequestSetting and replaces zero values with default values
-func fixPasteSettings(s *PasteSettings) {
-	var emptyString string
-	defaultSettings := DefaultPasteSettings()
-
-	if s.Language == emptyString {
-		s.Language = defaultSettings.Language
-	}
-	if s.ExpirationDuration == emptyString {
-		s.ExpirationDuration = defaultSettings.ExpirationDuration
-	}
-	if s.Visibility == emptyString {
-		s.Visibility = defaultSettings.Visibility
-	}
-}
+var pasteSettingSchema = z.Struct(z.Schema{
+	"language": z.String().OneOf(pasteLanguages, z.Message("unrecognized language")).Required(),
+	"expiration_duration": z.String().OneOf(expirationDurations, z.Message("unrecognized expiration duration")).Required(),
+	"expiration_number": z.Int().GT(0, z.Message("expiration number must be greater than zero")).Required(),
+	"visibility": z.String().OneOf(pasteVisibilities, z.Message("unrecognized visibility")).Required(),
+	"password": z.String(),
+})
 
 func createPasteServerError(c *gin.Context) {
 	c.JSON(http.StatusInternalServerError, gin.H{
@@ -67,8 +62,20 @@ func createPasteServerError(c *gin.Context) {
 }
 
 func (h *Handler) NewPasteHandler(c *gin.Context) {
+	bodyBytes, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		h.logger.Info("unable to read json from request", "err", err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "unable to read json from request",
+		})
+		return
+	}
+
+	// restore the request
+	c.Request.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+
 	var paste NewPasteRequest
-	err := c.ShouldBindJSON(&paste)
+	err = c.ShouldBindJSON(&paste)
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{
 			"error": err,
@@ -76,7 +83,33 @@ func (h *Handler) NewPasteHandler(c *gin.Context) {
 		return
 	}
 
-	fixPasteSettings(&paste.Settings)
+	var reqBody map[string]any
+	err = json.Unmarshal(bodyBytes, &reqBody)
+	if err != nil {
+		h.logger.Info("unable to read json from request", "err", err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "unable to read json from request",
+		})
+		return
+	}
+
+	settingsMap, ok := reqBody["settings"]
+	fmt.Println(settingsMap)
+	if ok {
+		// validate settings only if they exist in the request
+		// use default settings otherwise
+		errMap := pasteSettingSchema.Parse(settingsMap, &(paste.Settings))
+		if errMap != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": errMap,
+			})
+			return
+		}
+	} else {
+		paste.Settings = DefaultPasteSettings()
+	}
+
+
 	pasteID := utils.GenerateRandomID(8)
 	var pasteExpiration pgtype.Timestamp
 	if paste.Settings.ExpirationDuration == "never" {
@@ -100,7 +133,6 @@ func (h *Handler) NewPasteHandler(c *gin.Context) {
 	}
 	defer tx.Rollback(ctx)
 	qtx := h.pasteStore.WithTx(tx)
-	fmt.Println(paste)
 	err = qtx.CreatePaste(ctx, crud.CreatePasteParams{
 		ID:         pasteID,
 		Content:    paste.Content,

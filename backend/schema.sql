@@ -5,10 +5,10 @@ CREATE TABLE pastes (
 	expires_at TIMESTAMP,
 	visibility VARCHAR(10) NOT NULL DEFAULT 'public',
 	language  VARCHAR(20) NOT NULL,
-	password VARCHAR(255)
+	password VARCHAR
 );
 
--- CREATE TABLE users (
--- 	username VARCHAR(255) PRIMARY KEY,
--- 	sessions JSONB
--- );
+CREATE TABLE users (
+	username VARCHAR PRIMARY KEY,
+	email VARCHAR,
+);
