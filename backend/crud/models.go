@@ -11,8 +11,8 @@ import (
 type Paste struct {
 	ID         string
 	Content    string
-	CreatedAt  pgtype.Timestamp
-	ExpiresAt  pgtype.Timestamp
+	CreatedAt  pgtype.Timestamptz
+	ExpiresAt  pgtype.Timestamptz
 	Visibility string
 	Language   string
 	Password   pgtype.Text
@@ -20,5 +20,5 @@ type Paste struct {
 
 type User struct {
 	Username string
-	Sessions []byte
+	Email    pgtype.Text
 }

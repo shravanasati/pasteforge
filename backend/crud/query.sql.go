@@ -23,7 +23,7 @@ VALUES
 type CreatePasteParams struct {
 	ID         string
 	Content    string
-	ExpiresAt  pgtype.Timestamp
+	ExpiresAt  pgtype.Timestamptz
 	Visibility string
 	Language   string
 	Password   pgtype.Text

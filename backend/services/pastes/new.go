@@ -109,20 +109,20 @@ func (h *Handler) NewPasteHandler(c *gin.Context) {
 		paste.Settings = DefaultPasteSettings()
 	}
 
-
 	pasteID := utils.GenerateRandomID(8)
-	var pasteExpiration pgtype.Timestamp
+	var pasteExpiration pgtype.Timestamptz
 	if paste.Settings.ExpirationDuration == "never" {
-		pasteExpiration = pgtype.Timestamp{InfinityModifier: pgtype.Infinity}
+		pasteExpiration = pgtype.Timestamptz{InfinityModifier: pgtype.Infinity}
 	} else {
 		duration, ok := stringToDurationMap[paste.Settings.ExpirationDuration]
 		if !ok {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid value of expiration_duration=" + paste.Settings.ExpirationDuration})
 			return
 		}
-		// todo expires at not working
-		pasteExpiration = pgtype.Timestamp{Time: time.Now().Add(duration * time.Duration(paste.Settings.ExpirationNumber))}
+		pasteExpiration = pgtype.Timestamptz{InfinityModifier: pgtype.Finite, Time: time.Now().Add(duration * time.Duration(paste.Settings.ExpirationNumber))}
 	}
+	pasteExpiration.Valid = true
+	h.logger.Info("new paste handler", "pasteExpiratiom", pasteExpiration)
 	h.logger.Debug("new paste handler", "paste", paste)
 
 	ctx := context.Background()
