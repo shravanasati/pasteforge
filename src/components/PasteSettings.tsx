@@ -100,10 +100,10 @@ function Visibility({ visibilityRef }: VisibilityProps) {
   </div>
 }
 
-function PasswordField() {
+function PasswordField({passwordRef}: {passwordRef: React.RefObject<HTMLInputElement>}) {
   return <div className="flex items-center">
     <KeyRoundIcon size={24} className="mx-2 text-primary" />
-    <input type="password" placeholder="password" className="input input-bordered input-secondary w-full max-w-xs grow text-black" />
+    <input type="password" placeholder="password" className="input input-bordered input-secondary w-full max-w-xs grow text-black" ref={passwordRef} />
   </div>
 }
 
@@ -114,7 +114,7 @@ function SettingsValidationError({ error }: { error: string }) {
   </div>
 }
 
-async function handleSubmit(e: React.FormEvent, error: string, setError: React.Dispatch<React.SetStateAction<string>>, expirationNumRef: React.RefObject<HTMLInputElement>, expirationDurationRef: React.RefObject<HTMLSelectElement>, visibilityRef: React.RefObject<HTMLSelectElement>, setLoading: React.Dispatch<React.SetStateAction<boolean>>, code: string, language: string) {
+async function handleSubmit(e: React.FormEvent, error: string, setError: React.Dispatch<React.SetStateAction<string>>, expirationNumRef: React.RefObject<HTMLInputElement>, expirationDurationRef: React.RefObject<HTMLSelectElement>, visibilityRef: React.RefObject<HTMLSelectElement>, setLoading: React.Dispatch<React.SetStateAction<boolean>>, code: string, language: string, passwordRef: React.RefObject<HTMLInputElement>) {
   e.preventDefault()
   if (error) {
     return
@@ -158,7 +158,7 @@ async function handleSubmit(e: React.FormEvent, error: string, setError: React.D
         "expiration_duration": expirationDurationRef.current!.value,
         "visibility": visibilityRef.current!.value,
         "language": language,
-        "password": ""
+        "password": passwordRef.current!.value
       }
     } 
     console.log(reqBody)
@@ -192,6 +192,7 @@ export function PasteSettings({ language, code }: PasteSettingsProps) {
   const expirationNumRef = useRef<HTMLInputElement>(null)
   const expirationDurationRef = useRef<HTMLSelectElement>(null)
   const visibilityRef = useRef<HTMLSelectElement>(null)
+  const passwordRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     const settingsJSON = localStorage.getItem("settings")
@@ -208,12 +209,12 @@ export function PasteSettings({ language, code }: PasteSettingsProps) {
     visibilityRef.current!.value = settings.visibility
   }, [])
 
-  return <form onSubmit={(e) => handleSubmit(e, error, setError, expirationNumRef, expirationDurationRef, visibilityRef, setLoading, code, language)}>
+  return <form onSubmit={(e) => handleSubmit(e, error, setError, expirationNumRef, expirationDurationRef, visibilityRef, setLoading, code, language, passwordRef)}>
     <h1 className="m-2 p-2">paste settings</h1>
     <div className="flex flex-row justify-start flex-wrap items-center ml-4">
       <ExpirationDropdown expirationNumRef={expirationNumRef} expirationDurationRef={expirationDurationRef} setError={setError} />
       <Visibility visibilityRef={visibilityRef} />
-      <PasswordField />
+      <PasswordField passwordRef={passwordRef} />
       {error === "" ? null : <SettingsValidationError error={error} />}
     </div>
     {!loading ? <input type="submit" value="save" className="btn m-4" /> : <span className="btn m-4 loading loading-dots text-primary" />}
