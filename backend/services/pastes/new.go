@@ -48,11 +48,11 @@ type NewPasteRequest struct {
 }
 
 var pasteSettingSchema = z.Struct(z.Schema{
-	"language": z.String().OneOf(pasteLanguages, z.Message("unrecognized language")).Required(),
+	"language":            z.String().OneOf(pasteLanguages, z.Message("unrecognized language")).Required(),
 	"expiration_duration": z.String().OneOf(expirationDurations, z.Message("unrecognized expiration duration")).Required(),
-	"expiration_number": z.Int().GT(0, z.Message("expiration number must be greater than zero")).Required(),
-	"visibility": z.String().OneOf(pasteVisibilities, z.Message("unrecognized visibility")).Required(),
-	"password": z.String(),
+	"expiration_number":   z.Int().GT(0, z.Message("expiration number must be greater than zero")).Required(),
+	"visibility":          z.String().OneOf(pasteVisibilities, z.Message("unrecognized visibility")).Required(),
+	"password":            z.String(),
 })
 
 func createPasteServerError(c *gin.Context) {
@@ -119,10 +119,10 @@ func (h *Handler) NewPasteHandler(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid value of expiration_duration=" + paste.Settings.ExpirationDuration})
 			return
 		}
-		pasteExpiration = pgtype.Timestamptz{InfinityModifier: pgtype.Finite, Time: time.Now().Add(duration * time.Duration(paste.Settings.ExpirationNumber))}
+		pasteExpiration = pgtype.Timestamptz{InfinityModifier: pgtype.Finite, Time: time.Now().UTC().Add(duration * time.Duration(paste.Settings.ExpirationNumber))}
 	}
 	pasteExpiration.Valid = true
-	h.logger.Info("new paste handler", "pasteExpiratiom", pasteExpiration)
+	h.logger.Debug("new paste handler", "pasteExpiratiom", pasteExpiration)
 	h.logger.Debug("new paste handler", "paste", paste)
 
 	ctx := context.Background()

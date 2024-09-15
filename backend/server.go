@@ -1,12 +1,16 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"log"
 	"log/slog"
 	"net/http"
 	"os"
+	"os/signal"
 	"regexp"
+	"syscall"
 	"time"
 
 	"github.com/gin-contrib/gzip"
@@ -21,7 +25,7 @@ import (
 
 // env vars
 var (
-	ADDR string
+	ADDR              string
 	PORT              string
 	GIN_MODE          string
 	DIST_DIR          string
@@ -106,7 +110,12 @@ func main() {
 	v1Router := apiRouter.Group("/v1")
 
 	misc.RegisterRoutes(v1Router)
+
+	minuteTicker := time.NewTicker(time.Minute)
+	defer minuteTicker.Stop()
+	done := make(chan struct{})
 	pastesHandler := pastes.NewHandler(logger, db)
+	go pastesHandler.DeleteExpiredPastes(minuteTicker, done)
 	pastesHandler.RegisterRoutes(v1Router)
 
 	router.NoRoute(gin.WrapH(http.FileServer(http.Dir(DIST_DIR))))
@@ -119,6 +128,36 @@ func main() {
 		MaxHeaderBytes: 1 << 20, // 1MB
 	}
 
-	logger.Info("Listening at", "port", PORT)
-	log.Fatal(server.ListenAndServe())
+	// Initializing the server in a goroutine so that
+	// it won't block the graceful shutdown handling below
+	go func() {
+		logger.Info("Listening at", "port", PORT)
+		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			log.Fatal(err)
+		}
+	}()
+
+	// Wait for interrupt signal to gracefully shutdown the server with
+	// a timeout of 5 seconds.
+	quit := make(chan os.Signal, 1)
+	// kill (no param) default send syscall.SIGTERM
+	// kill -2 is syscall.SIGINT
+	// kill -9 is syscall.SIGKILL but can't be caught, so don't need to add it
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	logger.Info("Shutting down server...")
+
+	// send a signal to DeleteExpiredPastes goroutine to stop
+	done <- struct{}{}
+
+	// The context is used to inform the server it has 5 seconds to finish
+	// the request it is currently handling
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := server.Shutdown(ctx); err != nil {
+		log.Fatal("Server forced to shutdown:", err)
+	}
+
+	logger.Info("Server exiting...")
 }

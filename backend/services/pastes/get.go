@@ -17,7 +17,7 @@ func (h *Handler) GetPasteHandler(c *gin.Context) {
 	paste, err := h.pasteStore.GetPaste(context.Background(), pasteID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return 
+		return
 	}
 	c.JSON(http.StatusOK, paste)
 }

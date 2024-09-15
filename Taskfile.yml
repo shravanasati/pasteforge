@@ -106,3 +106,9 @@ tasks:
     dir: './backend'
     cmds:
       - tern new -m migrations {{ .CLI_ARGS }}
+
+  fmt:
+    desc: Reformat the go codebase.
+    dir: './backend'
+    cmds:
+      - go fmt ./...

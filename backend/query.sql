@@ -10,3 +10,6 @@ VALUES
 -- name: GetPaste :one
 SELECT * FROM pastes
 WHERE id=$1;
+
+-- name: DeleteExpiredPastes :exec
+DELETE FROM pastes WHERE CURRENT_TIMESTAMP >= expires_at;

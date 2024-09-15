@@ -41,6 +41,15 @@ func (q *Queries) CreatePaste(ctx context.Context, arg CreatePasteParams) error 
 	return err
 }
 
+const deleteExpiredPastes = `-- name: DeleteExpiredPastes :exec
+DELETE FROM pastes WHERE CURRENT_TIMESTAMP >= expires_at
+`
+
+func (q *Queries) DeleteExpiredPastes(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, deleteExpiredPastes)
+	return err
+}
+
 const getPaste = `-- name: GetPaste :one
 SELECT id, content, created_at, expires_at, visibility, language, password FROM pastes
 WHERE id=$1

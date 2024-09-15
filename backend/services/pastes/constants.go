@@ -1,19 +1,19 @@
 package pastes
 
 var pasteLanguages = []string{
-	"plain", 
-	"css", 
-	"cpp", 
-	"go", 
-	"html", 
-	"java", 
-	"javascript", 
-	"json", 
-	"python", 
-	"rust", 
-	"markdown", 
-	"php", 
-	"xml", 
+	"plain",
+	"css",
+	"cpp",
+	"go",
+	"html",
+	"java",
+	"javascript",
+	"json",
+	"python",
+	"rust",
+	"markdown",
+	"php",
+	"xml",
 	"yaml",
 }
 
