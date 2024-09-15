@@ -123,7 +123,7 @@ func (h *Handler) NewPasteHandler(c *gin.Context) {
 	}
 	pasteExpiration.Valid = true
 	h.logger.Debug("new paste handler", "pasteExpiratiom", pasteExpiration)
-	h.logger.Debug("new paste handler", "paste", paste)
+	h.logger.Info("new paste handler", "paste", paste)
 
 	ctx := context.Background()
 	tx, err := h.db.Begin(ctx)
@@ -137,7 +137,7 @@ func (h *Handler) NewPasteHandler(c *gin.Context) {
 		ID:         pasteID,
 		Content:    paste.Content,
 		Language:   paste.Settings.Language,
-		Password:   pgtype.Text{String: paste.Settings.Password},
+		Password:   pgtype.Text{String: utils.HashPassword(paste.Settings.Password), Valid: true},
 		Visibility: paste.Settings.Visibility,
 		ExpiresAt:  pasteExpiration,
 	})

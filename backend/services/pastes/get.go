@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/shravanasati/pasteforge/backend/utils"
 )
 
 func (h *Handler) GetPasteHandler(c *gin.Context) {
@@ -18,6 +19,14 @@ func (h *Handler) GetPasteHandler(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
+	}
+
+	if paste.Password.String != "" {
+		password := c.Query("password")
+		if !utils.ComparePasswords(paste.Password.String, password) {
+			c.JSON(http.StatusForbidden, gin.H{"error": "missing/incorrect password"})
+			return
+		}
 	}
 	c.JSON(http.StatusOK, paste)
 }
