@@ -1,5 +1,6 @@
 import { CircleX, KeyRoundIcon } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
+import { useNavigate } from "react-router-dom"
 
 type durationEnum = "minutes" | "hours" | "days" | "months" | "years" | "never"
 type visibilityEnum = "public" | "unlisted" | "private"
@@ -173,11 +174,14 @@ async function handleSubmit(e: React.FormEvent, error: string, setError: React.D
       return
     }
     console.log("saved")
+    const jsonResp = await resp.json()
+    return jsonResp.id as string
   } catch (e) {
     console.error("request failed", e)
+    return null
+  } finally {
     setLoading(false)
   }
-  setLoading(false)
 }
 
 type PasteSettingsProps = {
@@ -194,6 +198,8 @@ export function PasteSettings({ language, code }: PasteSettingsProps) {
   const visibilityRef = useRef<HTMLSelectElement>(null)
   const passwordRef = useRef<HTMLInputElement>(null)
 
+  const navigate = useNavigate()
+
   useEffect(() => {
     const settingsJSON = localStorage.getItem("settings")
     let settings: Settings;
@@ -209,7 +215,13 @@ export function PasteSettings({ language, code }: PasteSettingsProps) {
     visibilityRef.current!.value = settings.visibility
   }, [])
 
-  return <form onSubmit={(e) => handleSubmit(e, error, setError, expirationNumRef, expirationDurationRef, visibilityRef, setLoading, code, language, passwordRef)}>
+  return <form onSubmit={async(e) => {
+    const pasteID = await handleSubmit(e, error, setError, expirationNumRef, expirationDurationRef, visibilityRef, setLoading, code, language, passwordRef)
+
+    if (pasteID) {
+      navigate(`/p/${pasteID}`)
+    }
+  }}>
     <h1 className="m-2 p-2">paste settings</h1>
     <div className="flex flex-row justify-start flex-wrap items-center ml-4">
       <ExpirationDropdown expirationNumRef={expirationNumRef} expirationDurationRef={expirationDurationRef} setError={setError} />

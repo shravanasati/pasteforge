@@ -1,0 +1,57 @@
+pasteforge
+
+1. users
+- username (pk)
+- email
+- password_hash
+
+2. pastes
+- id (pk)
+- title
+- user_id (fk to users)
+- content
+- language
+- created_at
+- expires_at
+- visibility
+- password
+
+
+3. sessions
+- id (pk)
+- user_id (fk to users)
+- token
+- device_type
+- expires_at
+- created_at
+
+4. comments
+- id (pk)
+- paste_id (fk to pastes)
+- user_id (fk to users)
+- content 
+- created_at
+
+5. tags
+- id (pk)
+- name
+
+6. paste_tags
+- paste_id (fk to pastes)
+- tag_id (fk to tags)
+- composite pk
+
+7. notifications
+- id (pk)
+- user_id (fk to users)
+- channel
+- content
+
+8. reports
+- id (pk)
+- reporter_user (fk to users)
+- paste_id (fk to pastes)
+- comment_id (fk to comments)
+- reason
+- status
+- created_at
