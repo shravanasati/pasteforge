@@ -220,6 +220,8 @@ export function PasteSettings({ language, code }: PasteSettingsProps) {
 
     if (pasteID) {
       navigate(`/p/${pasteID}`)
+    } else {
+      setError("unable to create a paste 😕")
     }
   }}>
     <h1 className="m-2 p-2">paste settings</h1>

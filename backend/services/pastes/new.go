@@ -29,7 +29,7 @@ var stringToDurationMap = map[string]time.Duration{
 	"hours":   time.Hour,
 	"days":    time.Hour * 24,
 	"months":  time.Hour * 24 * 30,
-	"year":    time.Hour * 24 * 365,
+	"years":    time.Hour * 24 * 365,
 }
 
 func DefaultPasteSettings() PasteSettings {

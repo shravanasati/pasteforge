@@ -38,9 +38,12 @@ func main() {
 
 	gin.SetMode(GIN_MODE)
 	router := gin.Default()
+	defaultRateLimiter := NewRateLimiter(20, time.Second)
+	apiRateLimiter := NewRateLimiter(5, time.Second)
 	router.Use(gzip.Gzip(gzip.DefaultCompression))
 
 	apiRouter := router.Group("/api")
+	apiRouter.Use(apiRateLimiter)
 	v1Router := apiRouter.Group("/v1")
 
 	misc.RegisterRoutes(v1Router)
@@ -53,7 +56,7 @@ func main() {
 	pastesHandler.RegisterRoutes(v1Router)
 
 	router.Use(static.Serve("/", static.LocalFile(DIST_DIR, true)))
-	router.NoRoute(func(ctx *gin.Context) {
+	router.NoRoute(defaultRateLimiter, func(ctx *gin.Context) {
 		if !strings.HasPrefix(ctx.Request.RequestURI, "/api") {
 			ctx.File(DIST_DIR + "/index.html")
 			return
