@@ -55,7 +55,7 @@ func main() {
 	go pastesHandler.DeleteExpiredPastes(minuteTicker, done)
 	pastesHandler.RegisterRoutes(v1Router)
 
-	router.Use(static.Serve("/", static.LocalFile(DIST_DIR, true)))
+	router.Use(defaultRateLimiter, static.Serve("/", static.LocalFile(DIST_DIR, true)))
 	router.NoRoute(defaultRateLimiter, func(ctx *gin.Context) {
 		if !strings.HasPrefix(ctx.Request.RequestURI, "/api") {
 			ctx.File(DIST_DIR + "/index.html")
